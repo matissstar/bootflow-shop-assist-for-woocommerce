@@ -1,0 +1,1429 @@
+/* ============================================================
+   Shop Assist — Premium Frosted-Glass UI
+   v1.4.0 — macOS-inspired Glassmorphism
+   ============================================================ */
+
+:root {
+    /* ── Primary palette ── */
+    --msai-primary: #6366f1;
+    --msai-primary-hover: #4f46e5;
+    --msai-primary-light: rgba(99, 102, 241, 0.12);
+
+    /* ── Accent / CTA ── */
+    --msai-accent: #059669;
+    --msai-accent-hover: #047857;
+    --msai-accent-light: rgba(5, 150, 105, 0.10);
+
+    /* ── Gradients ── */
+    --msai-gradient-user: linear-gradient(135deg, #6366f1, #8b5cf6);
+    --msai-gradient-fab: linear-gradient(135deg, #6366f1, #8b5cf6);
+
+    /* ── Glass surfaces ── */
+    --msai-glass-bg: rgba(255, 255, 255, 0.72);
+    --msai-glass-border: rgba(255, 255, 255, 0.40);
+    --msai-glass-blur: 20px;
+    --msai-glass-saturate: 160%;
+
+    /* ── Neutral tones ── */
+    --msai-surface: rgba(255, 255, 255, 0.80);
+    --msai-surface-hover: rgba(255, 255, 255, 0.92);
+    --msai-bot-bg: rgba(241, 245, 249, 0.50);
+    --msai-border: rgba(0, 0, 0, 0.05);
+    --msai-border-strong: rgba(0, 0, 0, 0.08);
+
+    /* ── Text ── */
+    --msai-text: #1e293b;
+    --msai-text-secondary: #64748b;
+    --msai-text-muted: #94a3b8;
+    --msai-text-on-primary: #ffffff;
+
+    /* ── Shadows — multi-layer for depth ── */
+    --msai-shadow-sm: 0 1px 2px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.04);
+    --msai-shadow: 0 4px 12px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.04);
+    --msai-shadow-lg: 0 10px 30px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.05);
+    --msai-shadow-bubble: 0 1px 6px rgba(0,0,0,0.04);
+    --msai-shadow-float: 0 20px 50px rgba(0,0,0,0.12), 0 8px 20px rgba(0,0,0,0.06);
+
+    /* ── Radii ── */
+    --msai-radius-window: 20px;
+    --msai-radius-bubble: 18px;
+    --msai-radius-card: 16px;
+    --msai-radius-btn: 12px;
+    --msai-radius-pill: 100px;
+    --msai-radius-img: 12px;
+
+    /* ── Typography ── */
+    --msai-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --msai-font-size: 14px;
+    --msai-font-weight: 400;
+    --msai-font-style-override: normal;
+    --msai-line-height: 1.55;
+
+    /* ── Timing ── */
+    --msai-transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --msai-transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    --msai-spring: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* ── Danger ── */
+    --msai-danger: #ef4444;
+    --msai-danger-hover: #dc2626;
+
+    /* ── Warning / compare ── */
+    --msai-warning: #f59e0b;
+    --msai-warning-hover: #d97706;
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+
+@keyframes msai-fade-in-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes msai-scale-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes msai-pulse-ring {
+    0%   { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45); }
+    70%  { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+@keyframes msai-blink {
+    0%, 80%, 100% { opacity: 0.15; }
+    40% { opacity: 1; }
+}
+
+@keyframes msai-fab-entrance {
+    from { opacity: 0; transform: scale(0.5) rotate(-12deg); }
+    to   { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+@keyframes msai-gradient-rotate {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes msai-shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* ============================================================
+   Floating Action Button (FAB)
+   ============================================================ */
+
+#bootflow-shop-assist-floating-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 60px;
+    height: 60px;
+    background: var(--msai-gradient-fab);
+    color: var(--msai-text-on-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 999999 !important;
+    font-size: 24px;
+    box-shadow:
+        0 6px 20px rgba(99, 102, 241, 0.30),
+        0 2px 6px rgba(99, 102, 241, 0.15);
+    transition: transform var(--msai-spring), box-shadow var(--msai-transition);
+    animation: msai-fab-entrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+#bootflow-shop-assist-floating-btn.hidden {
+    display: none !important;
+}
+
+#bootflow-shop-assist-floating-btn:hover {
+    transform: scale(1.10);
+    box-shadow:
+        0 8px 28px rgba(99, 102, 241, 0.40),
+        0 3px 10px rgba(99, 102, 241, 0.20);
+}
+
+#bootflow-shop-assist-floating-btn:active {
+    transform: scale(0.95);
+}
+
+/* ============================================================
+   Main Chat Window — Frosted Glass container
+   ============================================================ */
+
+#bootflow-shop-assist-chatbot {
+    position: fixed;
+    bottom: 96px;
+    right: 24px;
+    width: 400px;
+    height: 540px;
+    background: var(--msai-glass-bg);
+    backdrop-filter: blur(var(--msai-glass-blur)) saturate(var(--msai-glass-saturate));
+    -webkit-backdrop-filter: blur(var(--msai-glass-blur)) saturate(var(--msai-glass-saturate));
+    border: 1px solid var(--msai-glass-border);
+    border-radius: var(--msai-radius-window);
+    box-shadow: var(--msai-shadow-float);
+    z-index: 999998 !important;
+    display: none;
+    overflow: hidden;
+    font-family: var(--msai-font);
+    font-size: var(--msai-font-size);
+    font-weight: var(--msai-font-weight);
+    font-style: var(--msai-font-style-override);
+    line-height: var(--msai-line-height);
+    color: var(--msai-text);
+    animation: msai-scale-in var(--msai-spring) both;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Desktop full-size modal */
+@media (min-width: 768px) {
+    #bootflow-shop-assist-chatbot.modal-open {
+        top: 5%;
+        left: 10%;
+        width: 80%;
+        height: 90%;
+        bottom: auto;
+        right: auto;
+        max-height: none;
+    }
+}
+
+/* Mobile modal */
+@media (max-width: 767px) {
+    #bootflow-shop-assist-chatbot.modal-open {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        bottom: auto;
+        right: auto;
+        border-radius: 0;
+        max-height: none;
+    }
+
+    #bootflow-shop-assist-chatbot:not(.modal-open) {
+        width: calc(100vw - 16px);
+        right: 8px;
+        bottom: 88px;
+        height: 70vh;
+        border-radius: 18px;
+    }
+}
+
+/* ============================================================
+   Header — frosted translucent bar
+   ============================================================ */
+
+.msai-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    border-bottom: 1px solid var(--msai-border);
+    border-radius: var(--msai-radius-window) var(--msai-radius-window) 0 0;
+}
+
+.msai-modal-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--msai-text);
+    letter-spacing: -0.02em;
+}
+
+.msai-modal-controls {
+    display: flex;
+    gap: 6px;
+}
+
+.msai-modal-btn {
+    width: 30px;
+    height: 30px;
+    border: none !important;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all var(--msai-transition);
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    line-height: 1 !important;
+    min-height: unset !important;
+}
+
+.msai-clear-btn {
+    background: rgba(100, 116, 139, 0.10) !important;
+    color: var(--msai-text-secondary) !important;
+}
+.msai-clear-btn svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+}
+.msai-clear-btn:hover {
+    background: rgba(100, 116, 139, 0.18) !important;
+    color: var(--msai-text) !important;
+}
+
+.msai-minimize-btn {
+    background: rgba(245, 158, 11, 0.12);
+    color: #b45309;
+}
+.msai-minimize-btn:hover {
+    background: rgba(245, 158, 11, 0.22);
+}
+.msai-minimize-btn svg {
+    pointer-events: none;
+}
+
+/* Expand / Shrink icon toggling */
+#bootflow-shop-assist-chatbot:not(.modal-open) .msai-icon-shrink { display: none !important; }
+#bootflow-shop-assist-chatbot:not(.modal-open) .msai-icon-expand { display: inline !important; }
+#bootflow-shop-assist-chatbot.modal-open .msai-icon-shrink { display: inline !important; }
+#bootflow-shop-assist-chatbot.modal-open .msai-icon-expand { display: none !important; }
+
+.msai-close-btn {
+    background: rgba(239, 68, 68, 0.10);
+    color: var(--msai-danger);
+}
+.msai-close-btn:hover {
+    background: rgba(239, 68, 68, 0.20);
+    color: var(--msai-danger-hover);
+}
+
+/* ============================================================
+   Body / Log area
+   ============================================================ */
+
+.msai-box {
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    height: calc(100% - 62px);
+    display: flex;
+    flex-direction: column;
+}
+
+.msai-h { display: none; }
+
+.msai-log {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 16px;
+    background: transparent;
+    scroll-behavior: smooth;
+}
+
+/* Thin custom scrollbar */
+.msai-log::-webkit-scrollbar { width: 5px; }
+.msai-log::-webkit-scrollbar-track { background: transparent; }
+.msai-log::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.10);
+    border-radius: 10px;
+}
+
+/* ============================================================
+   Input form — macOS Spotlight-inspired
+   ============================================================ */
+
+.msai-form {
+    display: flex;
+    gap: 6px;
+    padding: 12px 12px 14px;
+    background: rgba(255, 255, 255, 0.50);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    border-top: 1px solid var(--msai-border);
+}
+
+.msai-inp {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: var(--msai-radius-btn);
+    background: rgba(255, 255, 255, 0.70);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+    font-family: var(--msai-font);
+    font-size: 14px;
+    color: var(--msai-text);
+    transition: border-color var(--msai-transition), box-shadow var(--msai-transition);
+    outline: none;
+}
+
+.msai-inp:focus {
+    border-color: var(--msai-primary);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 3px var(--msai-primary-light);
+    background: rgba(255, 255, 255, 0.90);
+}
+
+.msai-inp::placeholder {
+    color: var(--msai-text-muted);
+}
+
+.msai-btn {
+    padding: 10px 14px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    background: linear-gradient(135deg, var(--msai-primary), var(--msai-primary-hover));
+    color: var(--msai-text-on-primary);
+    border: none;
+    border-radius: var(--msai-radius-btn);
+    cursor: pointer;
+    font-family: var(--msai-font);
+    font-size: 13px;
+    font-weight: 600;
+    transition: all var(--msai-transition);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.20);
+}
+
+.msai-btn:hover {
+    background: linear-gradient(135deg, var(--msai-primary-hover), var(--msai-primary));
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.30);
+    transform: translateY(-1px);
+}
+
+.msai-btn:active {
+    transform: scale(0.97) translateY(0);
+    box-shadow: 0 1px 4px rgba(99, 102, 241, 0.15);
+}
+
+/* ============================================================
+   Smart button — unified voice/search/compare
+   ============================================================ */
+
+.msai-smart-btn {
+    padding: 10px 14px !important;
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 13px !important;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    border-radius: var(--msai-radius-btn) !important;
+    transition: all var(--msai-transition);
+}
+
+.msai-smart-btn.msai-smart-voice {
+    background: rgba(100, 116, 139, 0.08) !important;
+    color: var(--msai-text-secondary) !important;
+    box-shadow: none !important;
+}
+
+.msai-smart-btn.msai-smart-voice:hover {
+    background: rgba(100, 116, 139, 0.15) !important;
+    color: var(--msai-text) !important;
+}
+
+/* Animated gradient border when recording */
+.msai-smart-btn.msai-recording {
+    background: linear-gradient(135deg, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #8b5cf6) !important;
+    background-size: 300% 300% !important;
+    animation: msai-gradient-rotate 2s ease infinite !important;
+    color: #fff !important;
+    border: none !important;
+    transition: box-shadow 0.1s ease, transform 0.1s ease !important;
+}
+
+/* When showing search/compare text, allow wider */
+.msai-smart-btn.msai-btn-filter-active {
+    font-size: 13px !important;
+    padding: 10px 14px !important;
+}
+
+/* Voice countdown on smart button */
+.msai-smart-btn.msai-voice-countdown {
+    font-size: 12px !important;
+    padding: 10px 12px !important;
+    animation: msai-pulse-ring 1s ease-out infinite;
+    background: linear-gradient(135deg, var(--msai-primary), #f97316) !important;
+    color: var(--msai-text-on-primary) !important;
+}
+
+/* ============================================================
+   Message Bubbles
+   ============================================================ */
+
+.msai-message {
+    margin-bottom: 10px;
+    padding: 10px 16px;
+    border-radius: var(--msai-radius-bubble);
+    max-width: 82%;
+    word-wrap: break-word;
+    line-height: var(--msai-line-height);
+    font-size: 14px;
+    box-shadow: var(--msai-shadow-bubble);
+    animation: msai-fade-in-up 0.3s ease both;
+}
+
+.msai-user {
+    background: var(--msai-gradient-user);
+    color: var(--msai-text-on-primary);
+    margin-left: auto;
+    text-align: right;
+    border-bottom-right-radius: 6px;
+    box-shadow: 0 2px 10px rgba(99, 102, 241, 0.18);
+}
+
+.msai-bot {
+    background: rgba(241, 245, 249, 0.92);
+    color: var(--msai-text);
+    border-bottom-left-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.30);
+    white-space: pre-line;
+}
+.msai-message a {
+    color: var(--msai-accent);
+    text-decoration: underline;
+    word-break: break-all;
+}
+.msai-message a:hover {
+    opacity: 0.8;
+}
+
+/* ============================================================
+   Loading dots
+   ============================================================ */
+
+.msai-loading {
+    padding: 10px 16px;
+}
+
+.msai-dots span {
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--msai-primary);
+    animation: msai-blink 1.4s infinite both;
+}
+.msai-dots span:nth-child(2) { animation-delay: 0.2s; }
+.msai-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+/* ============================================================
+   Product Grid & Cards — borderless frosted glass
+   ============================================================ */
+
+.msai-products {
+    margin-top: 12px;
+}
+
+.msai-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 12px;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.msai-card {
+    background: var(--msai-surface);
+    border: none;
+    border-radius: var(--msai-radius-card);
+    padding: 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 300px;
+    box-shadow: var(--msai-shadow);
+    transition: transform var(--msai-spring), box-shadow var(--msai-transition);
+    animation: msai-fade-in-up 0.35s ease both;
+}
+
+.msai-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--msai-shadow-lg);
+}
+
+.msai-card-img-wrap {
+    width: 100%;
+    height: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-bottom: 10px;
+    border-radius: var(--msai-radius-img);
+    background: rgba(248, 250, 252, 0.6);
+}
+
+.msai-card img {
+    max-width: 100%;
+    max-height: 130px;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform var(--msai-spring);
+    border-radius: var(--msai-radius-img);
+}
+
+.msai-card img:hover {
+    transform: scale(1.05);
+}
+
+.msai-card h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 6px 0;
+    color: var(--msai-text);
+    cursor: pointer;
+    transition: color var(--msai-transition);
+    line-height: 1.4;
+}
+
+.msai-card h4:hover {
+    color: var(--msai-primary);
+}
+
+.msai-card p {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--msai-text);
+    margin: 2px 0;
+}
+
+/* Button container inside cards */
+.msai-btn-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+.msai-btn-details,
+.msai-btn-compare,
+.msai-btn-cart {
+    width: 100%;
+    padding: 9px 12px;
+    border: none;
+    border-radius: var(--msai-radius-btn);
+    cursor: pointer;
+    font-family: var(--msai-font);
+    font-size: 13px;
+    font-weight: 600;
+    transition: all var(--msai-transition);
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.msai-btn-details {
+    background: var(--msai-btn-details-bg, rgba(100, 116, 139, 0.07));
+    color: var(--msai-btn-details-text, var(--msai-text-secondary));
+}
+.msai-btn-details:hover {
+    filter: brightness(0.92);
+    color: var(--msai-btn-details-text, var(--msai-text));
+}
+
+.msai-btn-compare {
+    background: var(--msai-btn-compare-bg, rgba(245, 158, 11, 0.08));
+    color: var(--msai-btn-compare-text, #92400e);
+}
+.msai-btn-compare:hover {
+    filter: brightness(0.92);
+}
+
+.msai-btn-cart {
+    background: var(--msai-btn-cart-bg, linear-gradient(135deg, var(--msai-accent), var(--msai-accent-hover)));
+    color: var(--msai-btn-cart-text, var(--msai-text-on-primary));
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+.msai-btn-cart:hover {
+    filter: brightness(0.92);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+/* Card selection states (compare) */
+.msai-card-selected {
+    background: rgba(245, 158, 11, 0.06) !important;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.30), var(--msai-shadow) !important;
+}
+
+.msai-card-ready {
+    background: rgba(5, 150, 105, 0.05) !important;
+    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.25), var(--msai-shadow) !important;
+}
+
+/* Load more */
+.msai-load-more {
+    text-align: center;
+    padding: 14px 0;
+    width: 100%;
+}
+
+.msai-btn-load-more {
+    background: linear-gradient(135deg, var(--msai-primary), var(--msai-primary-hover));
+    color: var(--msai-text-on-primary);
+    border: none;
+    border-radius: var(--msai-radius-pill);
+    padding: 10px 24px;
+    font-family: var(--msai-font);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--msai-transition);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.20);
+}
+.msai-btn-load-more:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.30);
+}
+
+/* Out of stock */
+.out-of-stock {
+    color: var(--msai-danger);
+    font-weight: 600;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* ============================================================
+   Filter Chips — Glass pills
+   ============================================================ */
+
+.msai-filter-chips {
+    padding: 10px 14px !important;
+    animation: msai-fade-in-up 0.3s ease both;
+}
+
+.msai-filter-label {
+    font-size: 12px;
+    color: var(--msai-text-secondary);
+    margin-bottom: 6px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.msai-chips-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.msai-filter-chip {
+    display: inline-block;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--msai-glass-border);
+    border-radius: var(--msai-radius-pill);
+    cursor: pointer;
+    font-family: var(--msai-font);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--msai-text-secondary);
+    transition: all var(--msai-transition);
+    white-space: nowrap;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.msai-filter-chip:hover {
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--msai-text);
+    transform: scale(1.04);
+    box-shadow: var(--msai-shadow-sm);
+}
+
+.msai-chip-selected {
+    background: var(--msai-primary) !important;
+    color: var(--msai-text-on-primary) !important;
+    border-color: var(--msai-primary) !important;
+}
+.msai-chip-selected:hover {
+    background: var(--msai-primary-hover) !important;
+    border-color: var(--msai-primary-hover) !important;
+    transform: scale(1.04);
+}
+
+.msai-chip-available {
+    background: var(--msai-accent-light) !important;
+    border-color: rgba(5, 150, 105, 0.20) !important;
+    color: var(--msai-accent) !important;
+}
+.msai-chip-available:hover {
+    background: rgba(5, 150, 105, 0.14) !important;
+    transform: scale(1.04);
+}
+
+.msai-chip-disabled {
+    background: rgba(0, 0, 0, 0.02) !important;
+    color: var(--msai-text-muted) !important;
+    border-color: rgba(0, 0, 0, 0.04) !important;
+    cursor: default !important;
+    opacity: 0.50;
+}
+.msai-chip-disabled:hover {
+    transform: none;
+}
+
+/*  ============================================================
+   Sort Chips
+   ============================================================ */
+
+.msai-sort-chips {
+    padding: 8px 14px !important;
+    animation: msai-fade-in-up 0.3s ease both;
+}
+
+.msai-sort-label {
+    font-size: 12px;
+    color: var(--msai-text-secondary);
+    margin-bottom: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.msai-sort-chip {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    padding: 6px 14px !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================
+   Gift chips
+   ============================================================ */
+
+.msai-gift-questions {
+    padding: 8px 0;
+}
+
+.msai-gift-chip {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 3px;
+    background: rgba(255, 255, 255, 0.50);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--msai-glass-border);
+    border-radius: var(--msai-radius-pill);
+    cursor: pointer;
+    font-family: var(--msai-font);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--msai-text);
+    transition: all var(--msai-transition);
+}
+
+.msai-gift-chip:hover {
+    background: var(--msai-primary-light);
+    border-color: rgba(99, 102, 241, 0.20);
+    color: var(--msai-primary);
+    transform: scale(1.04);
+}
+
+/* ============================================================
+   Comparison Table
+   ============================================================ */
+
+.msai-comparison-table {
+    margin: 12px 0;
+    overflow-x: auto;
+    border-radius: var(--msai-radius-card);
+    background: var(--msai-surface);
+    box-shadow: var(--msai-shadow);
+    animation: msai-fade-in-up 0.35s ease both;
+}
+
+.msai-comparison-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.msai-comparison-table th,
+.msai-comparison-table td {
+    border: 1px solid var(--msai-border);
+    padding: 10px 12px;
+    text-align: left;
+}
+
+.msai-comparison-table th {
+    background: rgba(241, 245, 249, 0.5);
+    font-weight: 700;
+    color: var(--msai-text);
+}
+
+.msai-comparison-table tr:nth-child(even) {
+    background: rgba(248, 250, 252, 0.4);
+}
+
+.msai-comparison-table a {
+    color: var(--msai-primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+.msai-comparison-table a:hover {
+    text-decoration: underline;
+}
+
+/* Compare action button */
+#msai-compare-btn {
+    background: linear-gradient(135deg, var(--msai-primary), var(--msai-primary-hover)) !important;
+    color: var(--msai-text-on-primary) !important;
+    border: none !important;
+    padding: 10px 20px !important;
+    border-radius: var(--msai-radius-pill) !important;
+    cursor: pointer !important;
+    font-weight: 600 !important;
+    font-family: var(--msai-font) !important;
+    transition: all var(--msai-transition) !important;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.20) !important;
+}
+#msai-compare-btn:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.30) !important;
+}
+
+/* ============================================================
+   Product Details
+   ============================================================ */
+
+.msai-product-details {
+    background: var(--msai-primary-light) !important;
+    padding: 14px 16px !important;
+    border-left: 3px solid var(--msai-primary) !important;
+    border-radius: 4px var(--msai-radius-bubble) var(--msai-radius-bubble) 4px !important;
+    margin: 8px 0 !important;
+    line-height: var(--msai-line-height);
+    font-size: 13px;
+}
+
+/* ============================================================
+   Starter Questions — frosted pills
+   ============================================================ */
+
+.msai-starter-questions {
+    padding: 8px 0;
+    animation: msai-fade-in-up 0.4s ease both;
+}
+
+.msai-starter-group {
+    margin-bottom: 14px;
+}
+
+.msai-starter-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--msai-text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    padding-left: 2px;
+}
+
+.msai-starter-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.50);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--msai-glass-border);
+    border-radius: var(--msai-radius-btn);
+    padding: 11px 16px;
+    margin-bottom: 6px;
+    font-family: var(--msai-font);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--msai-text);
+    cursor: pointer;
+    transition: all var(--msai-transition);
+}
+
+.msai-starter-btn:hover {
+    background: var(--msai-primary-light);
+    border-color: rgba(99, 102, 241, 0.20);
+    color: var(--msai-primary);
+    transform: translateX(4px);
+}
+
+/* ============================================================
+   Mobile responsive adjustments
+   ============================================================ */
+
+@media (max-width: 767px) {
+    .msai-modal-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 16px;
+    }
+
+    .msai-modal-header {
+        padding: 12px 16px;
+    }
+
+    .msai-modal-title {
+        font-size: 14px;
+    }
+
+    .msai-form {
+        padding: 10px 12px 12px;
+    }
+
+    .msai-log {
+        padding: 12px;
+    }
+
+    .msai-message {
+        max-width: 88%;
+    }
+
+    .msai-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+    }
+
+    .msai-card {
+        min-height: 280px;
+        padding: 10px;
+    }
+
+    #bootflow-shop-assist-floating-btn {
+        bottom: 16px;
+        right: 16px;
+        width: 56px;
+        height: 56px;
+        font-size: 22px;
+    }
+
+    /* Reduce blur on mobile for performance */
+    #bootflow-shop-assist-chatbot {
+        --msai-glass-blur: 14px;
+        --msai-glass-saturate: 140%;
+    }
+}
+
+/* Older devices: disable blur entirely for performance */
+@supports not (backdrop-filter: blur(1px)) {
+    #bootflow-shop-assist-chatbot {
+        background: rgba(255, 255, 255, 0.95);
+    }
+    .msai-modal-header,
+    .msai-form {
+        background: rgba(255, 255, 255, 0.90);
+    }
+    .msai-bot {
+        backdrop-filter: none;
+        background: rgba(241, 245, 249, 0.85);
+    }
+}
+
+/* ============================================================
+   Utility — composited layers
+   ============================================================ */
+
+#bootflow-shop-assist-chatbot,
+#bootflow-shop-assist-floating-btn {
+    will-change: transform;
+}
+
+/* ============================================================
+   Lightbox (image gallery overlay)
+   ============================================================ */
+
+.msai-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000000;
+    background: rgba(0, 0, 0, 0.80);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: msai-fade-in-up 0.2s ease both;
+    cursor: zoom-out;
+}
+
+.msai-lightbox-img {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    cursor: default;
+    animation: msai-scale-in var(--msai-spring) both;
+}
+
+.msai-lightbox-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.12);
+    border: none;
+    color: #fff;
+    font-size: 28px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--msai-transition);
+    line-height: 1;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.msai-lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.msai-lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: none;
+    color: #fff;
+    font-size: 36px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--msai-transition);
+    line-height: 1;
+}
+
+.msai-lightbox-nav:hover {
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.msai-lightbox-prev { left: 16px; }
+.msai-lightbox-next { right: 16px; }
+
+.msai-lightbox-counter {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.65);
+    font-family: var(--msai-font);
+    font-size: 13px;
+    font-weight: 500;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    background: rgba(0, 0, 0, 0.25);
+    padding: 4px 14px;
+    border-radius: var(--msai-radius-pill);
+}
+
+/* ============================================================
+   Comparison table images
+   ============================================================ */
+
+.msai-compare-img {
+    max-width: 120px;
+    max-height: 100px;
+    object-fit: contain;
+    border-radius: var(--msai-radius-img);
+    cursor: pointer;
+    transition: transform var(--msai-spring), box-shadow var(--msai-transition);
+}
+
+.msai-compare-img:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+}
+
+/* ============================================================
+   Product Details header (image + name row)
+   ============================================================ */
+
+.msai-details-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--msai-border);
+}
+
+.msai-details-img {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    border-radius: var(--msai-radius-img);
+    background: rgba(248, 250, 252, 0.6);
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform var(--msai-spring);
+}
+
+.msai-details-img:hover {
+    transform: scale(1.06);
+}
+
+.msai-details-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--msai-primary);
+    text-decoration: none;
+    line-height: 1.3;
+}
+
+.msai-details-name:hover {
+    text-decoration: underline;
+}
+
+.msai-details-text {
+    font-size: 13px;
+    line-height: var(--msai-line-height);
+    color: var(--msai-text);
+}
+
+/* ---- Voice-to-Cart confirmation ---- */
+.msai-cart-confirm,
+.msai-cart-choices {
+    background: var(--msai-glass-bg);
+    backdrop-filter: blur(16px);
+    border-radius: var(--msai-radius);
+    padding: 14px 16px;
+    border: 1px solid var(--msai-glass-border);
+}
+
+.msai-cart-confirm p,
+.msai-cart-choices p {
+    margin: 0 0 10px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.msai-cart-confirm-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.msai-btn-cart-yes {
+    background: linear-gradient(135deg, var(--msai-accent), var(--msai-accent-hover));
+    color: var(--msai-text-on-primary);
+    border: none;
+    border-radius: var(--msai-radius-sm);
+    padding: 8px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.msai-btn-cart-yes:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.28);
+}
+
+.msai-btn-cart-no {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--msai-text-muted);
+    border: 1px solid var(--msai-glass-border);
+    border-radius: var(--msai-radius-sm);
+    padding: 8px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.msai-btn-cart-no:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--msai-text);
+}
+
+.msai-cart-choice-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.msai-btn-cart-choice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--msai-text);
+    border: 1px solid var(--msai-glass-border);
+    border-radius: var(--msai-radius-sm);
+    padding: 8px 12px;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.msai-btn-cart-choice:hover {
+    background: rgba(5, 150, 105, 0.12);
+    border-color: var(--msai-accent);
+    transform: translateX(4px);
+}
+.msai-choice-img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+.msai-choice-text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* === Shipping selection === */
+.msai-shipping-select {
+    background: var(--msai-glass-bg);
+    backdrop-filter: blur(16px);
+    border-radius: var(--msai-radius);
+    padding: 14px 16px;
+    border: 1px solid var(--msai-glass-border);
+}
+.msai-shipping-select p {
+    margin: 0 0 10px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+.msai-shipping-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.msai-btn-shipping {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--msai-text);
+    border: 1px solid var(--msai-glass-border);
+    border-radius: var(--msai-radius-sm);
+    padding: 10px 14px;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.msai-btn-shipping:hover {
+    background: rgba(5, 150, 105, 0.12);
+    border-color: var(--msai-accent);
+    transform: translateX(4px);
+}
+.msai-shipping-label {
+    flex: 1;
+    font-weight: 500;
+}
+.msai-shipping-cost {
+    font-weight: 600;
+    color: var(--msai-accent);
+    white-space: nowrap;
+}
+.msai-btn-shipping-skip {
+    justify-content: center;
+    font-style: italic;
+    color: var(--msai-text-muted);
+    border-style: dashed;
+}
+.msai-btn-shipping-skip:hover {
+    color: var(--msai-text);
+}
+.msai-shipping-loading p {
+    font-style: italic;
+    color: var(--msai-text-muted);
+}
+
+/* Handoff — contact operator buttons */
+.msai-handoff {
+    padding: 10px 14px;
+    margin: 6px 0 10px 0;
+}
+.msai-handoff-heading {
+    font-size: 0.88em;
+    font-weight: 600;
+    color: var(--msai-text-muted);
+    margin-bottom: 8px;
+}
+.msai-handoff-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.msai-handoff-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 0.88em;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+    border: 1.5px solid;
+    background: transparent;
+}
+.msai-handoff-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.msai-handoff-email    { border-color: #2563eb; color: #2563eb; }
+.msai-handoff-email:hover    { background: rgba(37,99,235,0.06); }
+.msai-handoff-whatsapp { border-color: #25d366; color: #25d366; }
+.msai-handoff-whatsapp:hover { background: rgba(37,211,102,0.06); }
+.msai-handoff-telegram { border-color: #0088cc; color: #0088cc; }
+.msai-handoff-telegram:hover { background: rgba(0,136,204,0.06); }
+.msai-handoff-facebook { border-color: #1877f2; color: #1877f2; }
+.msai-handoff-facebook:hover { background: rgba(24,119,242,0.06); }
+.msai-handoff-instagram { border-color: #e4405f; color: #e4405f; }
+.msai-handoff-instagram:hover { background: rgba(228,64,95,0.06); }
+.msai-handoff-tiktok   { border-color: #010101; color: #010101; }
+.msai-handoff-tiktok:hover   { background: rgba(0,0,0,0.04); }
+.msai-handoff-custom   { border-color: var(--msai-primary); color: var(--msai-primary); }
+.msai-handoff-custom:hover   { background: rgba(0,0,0,0.03); }
+
+/* White-label powered-by credit */
+.msai-powered-by {
+    text-align: center;
+    padding: 4px 12px 6px;
+    font-size: 10px;
+    color: var(--msai-text-muted);
+    opacity: 0.6;
+    letter-spacing: 0.02em;
+}
+.msai-powered-by a {
+    color: var(--msai-text-muted);
+    text-decoration: none;
+}
+.msai-powered-by a:hover {
+    color: var(--msai-text-secondary);
+    text-decoration: underline;
+}
