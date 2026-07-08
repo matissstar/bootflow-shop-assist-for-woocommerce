@@ -4,7 +4,7 @@ Tags: woocommerce, chatbot, product search, shop assistant, live chat
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.0.0
+Stable tag: 2.0.2
 License: GPLv2 or later
 
 Smart product search assistant for WooCommerce — keyword & fuzzy matching, voice input, product comparison, and custom responses.

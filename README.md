@@ -81,7 +81,7 @@ Its main job is product discovery, not pretending to answer every possible quest
 
 - Website: https://bootflow.io/
 - Repository: https://github.com/matissstar/ai-chatbot-ms
-
+- PRO Version with AI search, analytics, Multi Language support: https://bootflow.io/ai-chatbot-for-woocommerce/
 ## License
 
 GPL v2 or later.
