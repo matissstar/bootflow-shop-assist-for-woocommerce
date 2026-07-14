@@ -151,14 +151,12 @@ class Bootflow_Shop_Assist_Chatbot {
             return;
         }
 
-        $upload_dir = wp_upload_dir();
-        $fallback_path = trailingslashit($upload_dir['basedir']) . 'ai-chatboot-products.json';
-        $fallback_url = trailingslashit($upload_dir['baseurl']) . 'ai-chatboot-products.json';
+        $locations = $this->get_json_export_locations();
 
-        if (file_exists($fallback_path)) {
-            update_option('bootshas_products_json_path', $fallback_path);
-            update_option('bootshas_products_json_url', $fallback_url);
-            update_option('bootshas_products_export_time', filemtime($fallback_path) ?: time());
+        if (file_exists($locations['path'])) {
+            update_option('bootshas_products_json_path', $locations['path']);
+            update_option('bootshas_products_json_url', $locations['url']);
+            update_option('bootshas_products_export_time', filemtime($locations['path']) ?: time());
             return;
         }
 
@@ -169,6 +167,19 @@ class Bootflow_Shop_Assist_Chatbot {
         set_transient(self::EXPORT_INIT_TRANSIENT, 1, 60);
         $this->export_products_to_json();
         delete_transient(self::EXPORT_INIT_TRANSIENT);
+    }
+
+    private function get_json_export_locations() {
+        $upload_dir = wp_upload_dir();
+        $folder = 'bootflow-shop-assist-for-woocommerce';
+        $dir = trailingslashit($upload_dir['basedir']) . $folder;
+        $url_dir = trailingslashit($upload_dir['baseurl']) . $folder;
+
+        return [
+            'dir' => $dir,
+            'path' => trailingslashit($dir) . 'ai-chatboot-products.json',
+            'url' => trailingslashit($url_dir) . 'ai-chatboot-products.json',
+        ];
     }
 
     private function queue_debounced_export() {
@@ -834,13 +845,18 @@ class Bootflow_Shop_Assist_Chatbot {
 
         $all_data = array_values(array_filter($all_data));
 
-        $upload_dir = wp_upload_dir();
-        $file_path = $upload_dir['basedir'] . '/ai-chatboot-products.json';
+        $locations = $this->get_json_export_locations();
+        if (!file_exists($locations['dir']) && !wp_mkdir_p($locations['dir'])) {
+            delete_transient(self::EXPORT_LOCK_TRANSIENT);
+            return false;
+        }
+
+        $file_path = $locations['path'];
 
         $written = file_put_contents($file_path, json_encode($all_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         if ($written !== false) {
             update_option('bootshas_products_json_path', $file_path);
-            update_option('bootshas_products_json_url', $upload_dir['baseurl'] . '/ai-chatboot-products.json');
+            update_option('bootshas_products_json_url', $locations['url']);
             update_option('bootshas_products_export_time', time());
             delete_transient(self::EXPORT_QUEUE_TRANSIENT);
             delete_transient(self::EXPORT_LOCK_TRANSIENT);
@@ -1180,10 +1196,10 @@ class Bootflow_Shop_Assist_Chatbot {
 
         $item = $items[$index];
         $type = sanitize_key((string)($item['type'] ?? 'text'));
-        if ($type === 'ai') {
-            $type = 'auto';
+        if ($type === 'ai' || $type === 'auto') {
+            $type = 'text';
         }
-        if (!in_array($type, ['text', 'search', 'auto', 'faq'], true)) {
+        if (!in_array($type, ['text', 'search', 'faq'], true)) {
             $type = 'text';
         }
 
@@ -1269,32 +1285,6 @@ class Bootflow_Shop_Assist_Chatbot {
             }
 
             wp_send_json_success($result);
-            return;
-        }
-
-        if ($type === 'auto') {
-            $ai_text = trim((string) wp_kses_post($item['ai_text'] ?? ''));
-            if ($ai_text !== '') {
-                wp_send_json_success(['text' => $ai_text]);
-                return;
-            }
-
-            $keywords = sanitize_text_field((string)($item['ai_keywords'] ?? ''));
-            $products = [];
-            if ($keywords !== '') {
-                $products = $this->search_products($keywords);
-            }
-
-            if (!empty($products)) {
-                wp_send_json_success([
-                    'text'     => bootshas_t('be_some_options'),
-                    'products' => $products,
-                    'mode'     => 'search',
-                ]);
-                return;
-            }
-
-            wp_send_json_success(['text' => bootshas_t('be_query_unclear')]);
             return;
         }
 

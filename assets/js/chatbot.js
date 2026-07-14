@@ -1999,9 +1999,15 @@
         return v;
     }
 
+    function isSecureVoiceContext() {
+        var host = (window.location && window.location.hostname) ? window.location.hostname : '';
+        var isLocalhost = host === 'localhost' || host === '127.0.0.1' || host === '::1';
+        return !!window.isSecureContext || isLocalhost;
+    }
+
     function sendCloudSpeechBlob(blob, mimeType) {
         var fd = new FormData();
-        fd.append('action', 'bootshas_pro_speech_to_text');
+        fd.append('action', 'bootflow_shop_assist_pro_speech_to_text');
         fd.append('nonce', bootshas_ajax.nonce || '');
         fd.append('lang', t('speech_lang') || 'en-US');
         fd.append('audio', blob, 'voice.' + ((mimeType || '').indexOf('ogg') !== -1 ? 'ogg' : 'webm'));
@@ -2036,6 +2042,11 @@
     }
 
     function startCloudRecording() {
+        if (!isSecureVoiceContext()) {
+            addMessageToLog('bot', 'Balss ievade šajā pārlūkā prasa drošu savienojumu (HTTPS). Atver veikalu ar https:// vai testē uz localhost.', true);
+            return;
+        }
+
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') {
             addMessageToLog('bot', t('voice_not_supported'), true);
             return;
@@ -2118,6 +2129,11 @@
         }
 
         if (!useWebSpeech) {
+            // Firefox and other non-Chrome browsers: show browser compatibility message
+            var isFirefox = /Firefox/i.test(navigator.userAgent || '');
+            if (isFirefox && window.console && window.console.log) {
+                console.log('[Bootflow Shop Assist] Firefox detected - voice input not available (use Chrome/Edge)');
+            }
             if (canUseCloudSpeechFallback()) {
                 startCloudRecording();
                 return;

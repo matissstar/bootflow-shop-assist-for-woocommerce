@@ -55,10 +55,21 @@ class Bootflow_Shop_Assist_Admin {
             return;
         }
 
-        wp_register_script('bootflow-shop-assist-admin', '', [], BOOTFLOW_SHOP_ASSIST_VERSION, true);
+        wp_register_script(
+            'bootflow-shop-assist-admin',
+            BOOTFLOW_SHOP_ASSIST_PLUGIN_URL . 'assets/js/admin.js',
+            [],
+            BOOTFLOW_SHOP_ASSIST_VERSION,
+            true
+        );
         wp_enqueue_script('bootflow-shop-assist-admin');
 
-        wp_register_style('bootflow-shop-assist-admin-css', BOOTFLOW_SHOP_ASSIST_PLUGIN_URL . 'assets/css/admin.css', [], BOOTFLOW_SHOP_ASSIST_VERSION);
+        wp_register_style(
+            'bootflow-shop-assist-admin-css',
+            BOOTFLOW_SHOP_ASSIST_PLUGIN_URL . 'assets/css/admin.css',
+            [],
+            BOOTFLOW_SHOP_ASSIST_VERSION
+        );
         wp_enqueue_style('bootflow-shop-assist-admin-css');
     }
 
@@ -345,13 +356,6 @@ class Bootflow_Shop_Assist_Admin {
         <div class="wrap">
             <h1><?php echo esc_html($wl_admin_name); ?> — <?php echo esc_html(bootshas_t('admin_tab_responses')); ?></h1>
             <?php $this->render_custom_responses_tab(); ?>
-            <?php
-            /**
-             * Hook: bootflow_shop_assist_after_custom_responses_page
-             * Add-ons can inject additional UI below the Custom Responses page.
-             */
-            do_action('bootflow_shop_assist_after_custom_responses_page');
-            ?>
         </div>
         <?php
     }
@@ -953,8 +957,8 @@ wp_add_inline_script('bootflow-shop-assist-admin', ob_get_clean());
         $option_keys = apply_filters('bootflow_shop_assist_export_option_keys', $option_keys);
 
         $data = [
-            'plugin'     => 'ai_chatboot_ms',
-            'version'    => defined('AI_CHATBOOT_MS_VERSION') ? AI_CHATBOOT_MS_VERSION : '1.0.0',
+            'plugin'     => 'bootflow_shop_assist_for_woocommerce',
+            'version'    => defined('BOOTFLOW_SHOP_ASSIST_VERSION') ? BOOTFLOW_SHOP_ASSIST_VERSION : '1.0.0',
             'exported'   => gmdate('Y-m-d H:i:s'),
             'site'       => get_site_url(),
             'settings'   => [],
@@ -1211,7 +1215,7 @@ wp_add_inline_script('bootflow-shop-assist-admin', ob_get_clean());
         $content = file_get_contents($tmp_name);
         $data = json_decode($content, true);
 
-        if (!is_array($data) || empty($data['plugin']) || $data['plugin'] !== 'ai_chatboot_ms' || empty($data['settings'])) {
+        if (!is_array($data) || empty($data['plugin']) || (string) $data['plugin'] !== 'bootflow_shop_assist_for_woocommerce' || empty($data['settings'])) {
             wp_safe_redirect(add_query_arg(['msai_import' => 'invalid', 'msai_notice_nonce' => $notice_nonce], $redirect));
             exit;
         }
