@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Bootflow Shop Assist for WooCommerce
  * Description: Product search assistant for WooCommerce with local search, voice input, comparison, and custom responses.
- * Version: 2.0.2
+ * Version: 2.1.0
  * Author: Bootflow.io
  * License: GPL v2 or later
  * Text Domain: bootflow-shop-assist-for-woocommerce
@@ -16,7 +16,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('BOOTFLOW_SHOP_ASSIST_VERSION', '2.0.2');
+define('BOOTFLOW_SHOP_ASSIST_VERSION', '2.1.0');
 define('BOOTFLOW_SHOP_ASSIST_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('BOOTFLOW_SHOP_ASSIST_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('BOOTFLOW_SHOP_ASSIST_PLUGIN_FILE', __FILE__);

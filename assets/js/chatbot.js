@@ -1014,7 +1014,7 @@
     }
 
     // Display products with infinite scroll
-    var PRODUCTS_PER_PAGE = 21;
+    var PRODUCTS_PER_PAGE = 16;
 
     function displayProducts(products, mode = 'search') {
         const log = $('#msai-log');

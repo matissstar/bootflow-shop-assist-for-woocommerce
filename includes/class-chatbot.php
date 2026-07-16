@@ -545,6 +545,35 @@ class Bootflow_Shop_Assist_Chatbot {
             }
         }
 
+        // PRO mode: AI-first and AI-only search path.
+        if ($this->is_pro_license_active()) {
+            $ai_response = apply_filters('bootflow_shop_assist_ai_search', null, $message, $lower);
+            if ($ai_response !== null) {
+                wp_send_json_success($ai_response);
+                return;
+            }
+
+            $keyword_results = $this->search_products($message);
+            if (!empty($keyword_results)) {
+                wp_send_json_success([
+                    'text' => bootshas_t('be_some_options'),
+                    'products' => $keyword_results
+                ]);
+                return;
+            }
+
+            $addon_response = apply_filters('bootflow_shop_assist_fallback_response', null, $message, $lower);
+            if ($addon_response !== null) {
+                wp_send_json_success($addon_response);
+                return;
+            }
+
+            wp_send_json_success([
+                'text' => bootshas_t('be_query_unclear')
+            ]);
+            return;
+        }
+
         // Gift detection
         $gift_kw = array_map('trim', explode(',', bootshas_t('gift_keywords')));
         $is_gift = false;
@@ -605,6 +634,18 @@ class Bootflow_Shop_Assist_Chatbot {
         wp_send_json_success([
             'text' => bootshas_t('be_query_unclear')
         ]);
+    }
+
+    private function is_pro_license_active() {
+        if (!class_exists('Bootflow_Shop_Assist_Pro_Plugin')) {
+            return false;
+        }
+
+        if (!method_exists('Bootflow_Shop_Assist_Pro_Plugin', 'is_license_active')) {
+            return false;
+        }
+
+        return (bool) Bootflow_Shop_Assist_Pro_Plugin::is_license_active();
     }
 
     private function fuzzy_contains($haystack, $needle) {
@@ -723,7 +764,10 @@ class Bootflow_Shop_Assist_Chatbot {
                     return ($b['_score'] ?? 0) - ($a['_score'] ?? 0);
                 });
 
-                $scored_results = array_slice($scored_results, 0, 12);
+                $max_results = (int) apply_filters('bootshas_search_results_max', 0);
+                if ($max_results > 0) {
+                    $scored_results = array_slice($scored_results, 0, $max_results);
+                }
 
                 $final = [];
                 foreach ($scored_results as $r) {
@@ -753,7 +797,7 @@ class Bootflow_Shop_Assist_Chatbot {
         // Fallback: WP search
         $args = [
             'post_type' => 'product',
-            'posts_per_page' => 12,
+            'posts_per_page' => -1,
             's' => $query,
             'post_status' => 'publish'
         ];
@@ -765,7 +809,7 @@ class Bootflow_Shop_Assist_Chatbot {
         $budget = preg_match('/(\d+)\s*€/', $query, $matches) ? $matches[1] : null;
         $args = [
             'post_type' => 'product',
-            'posts_per_page' => 12,
+            'posts_per_page' => 16,
             'post_status' => 'publish',
             // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- price range lookup requires meta filter on WooCommerce products
             'meta_query' => []
